@@ -368,10 +368,13 @@
       .tbl-wrap {
         border: 1px solid var(--line);
         border-radius: 10px;
-        overflow: hidden;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
       }
       table {
         width: 100%;
+        min-width: 1080px;
         border-collapse: collapse;
         font-size: 13.5px;
       }
@@ -456,6 +459,15 @@
       .ev-link {
         font-family: var(--mono);
         font-size: 11.5px;
+      }
+      .ev-link a {
+        color: var(--text);
+        text-decoration: underline;
+        word-break: break-word;
+      }
+      .ev-link a:hover {
+        color: var(--link);
+        text-decoration-thickness: 2px;
       }
       .conf-tag {
         font-family: var(--mono);
@@ -2482,6 +2494,16 @@ page = session.execute_tool("COMPOSIO_BROWSER_FETCH", {"url": results[0]["url"]}
         return c;
       }
 
+      function evidenceHref(value) {
+        const text = String(value || '').trim();
+        if (!text) return null;
+        if (/^https?:\/\//i.test(text)) return text;
+        if (/^[a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(text)) {
+          return `https://${text}`;
+        }
+        return null;
+      }
+
       function render() {
         tbody.innerHTML = '';
         APPS.filter(
@@ -2509,7 +2531,7 @@ page = session.execute_tool("COMPOSIO_BROWSER_FETCH", {"url": results[0]["url"]}
           ${a.blocker ? `<div class="blocker-cell">${a.blocker}</div>` : ''}
           <div class="conf-tag ${confClass}">${a.conf}</div>
         </td>
-        <td class="ev-link">${a.evidence}</td>
+        <td class="ev-link">${evidenceHref(a.evidence) ? `<a href="${evidenceHref(a.evidence)}" target="_blank" rel="noreferrer noopener">${a.evidence}</a>` : a.evidence}</td>
       `;
           tbody.appendChild(tr);
         });
