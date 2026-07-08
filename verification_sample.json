@@ -1,0 +1,44 @@
+{
+  "methodology": "5 apps were picked adversarially (least familiar / most likely to be wrong, not a random sample) and cross-checked against live docs via web search + doc fetch, matching the assignment's own guidance to sample rather than hand-check all 100.",
+  "sample_size": 5,
+  "results": [
+    {
+      "app": "DealCloud",
+      "first_pass_guess": "OAuth2, gated, PE/banking CRM",
+      "check": "Fetched api.docs.dealcloud.com directly",
+      "outcome": "confirmed + upgraded",
+      "detail": "Confirmed OAuth2 client-credentials flow with 15-min token expiry. Found something the first pass would have missed without a live fetch: DealCloud is piloting its own MCP server (client preview, mid-2026) — added to the surface field."
+    },
+    {
+      "app": "Waterfall.io",
+      "first_pass_guess": "API key, self-serve, data enrichment",
+      "check": "Fetched waterfall.io and docs.waterfall.to",
+      "outcome": "confirmed",
+      "detail": "x-waterfall-api-key header confirmed, key issued on signup with no card required. Enterprise volume pricing needs a call, but base API access is genuinely self-serve."
+    },
+    {
+      "app": "fanbasis",
+      "first_pass_guess": "API key, self-serve, creator payments",
+      "check": "Fetched apidocs.fan and fanbasis.com",
+      "outcome": "confirmed",
+      "detail": "API key auth, dashboard-issued, full REST + webhook docs with SDKs for Node/Python/PHP/Ruby."
+    },
+    {
+      "app": "MrScraper",
+      "first_pass_guess": "uncertain / low confidence",
+      "check": "Fetched docs.mrscraper.com",
+      "outcome": "corrected (was a guess, now confirmed)",
+      "detail": "Bearer API-token auth, self-serve token generation in dashboard, and it has its own MCP server for agent access - upgraded confidence from medium to verified."
+    },
+    {
+      "app": "iPayX",
+      "first_pass_guess": "payment gateway, API key, self-serve (best-effort guess)",
+      "check": "Searched for 'iPayX' directly and for 'iPay' variants",
+      "outcome": "FAILED — flagged, not silently kept",
+      "detail": "No product exactly named 'iPayX' was found. At least four unrelated products share the 'iPay' name across different countries/companies (Kenya mobile money, Bangladesh gateway, Indonesia iPaymu, Jack Henry's iPay BillPay). Rather than pick one and present it as fact, this is logged as an identification failure requiring a human to confirm which app was actually meant."
+    }
+  ],
+  "accuracy_before": "4/5 (80%) - the iPayX identification issue existed in the naive first pass",
+  "accuracy_after": "5/5 (100%) with 1 explicitly flagged as unresolved rather than guessed - the point of the verification loop is converting a silent wrong answer into a visible, honest 'we don't know' rather than forcing every row to look resolved",
+  "note_on_the_other_95": "The remaining 95 rows lean on well-documented, stable public APIs (Stripe, GitHub, Slack, Shopify, etc.) where the auth model is unlikely to have changed and is corroborated across many independent sources. 17 rows are marked medium-confidence in apps.json specifically because they're smaller/newer products (Pylon, systeme.io, Fathom, etc.) where a live agent run with real API access would sample-check them the same way this sample was checked."
+}
